@@ -11,37 +11,49 @@
             --atritado: #ff5252; --analitico: #ffd740; --expresso: #40c4ff; --pragmatico: #69f0ae;
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        
+        /* Status Online Pulsante */
+        .status-online { display: flex; align-items: center; font-size: 0.7rem; color: var(--pragmatico); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .dot { height: 8px; width: 8px; background-color: var(--pragmatico); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--pragmatico); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-        .tma-badge { background: #333; padding: 8px 15px; border-radius: 5px; color: var(--pragmatico); font-weight: bold; border: 1px solid var(--pragmatico); }
+        .tma-badge { background: #1a3321; padding: 8px 15px; border-radius: 5px; color: var(--pragmatico); font-weight: bold; border: 1px solid var(--pragmatico); font-size: 0.8rem; }
+        
         .grid-perfis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.75rem; }
+        .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
+        .btn-perfil:active { transform: scale(0.95); opacity: 0.8; }
         .atritado { background: var(--atritado); }
         .analitico { background: var(--analitico); }
         .expresso { background: var(--expresso); }
         .pragmatico { background: var(--pragmatico); }
+
         .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #555; }
         .metric-title { font-size: 0.9rem; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .progress-bar { background: #333; height: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; height: 20px; }
+        .progress-bar { background: #333; border-radius: 10px; overflow: hidden; margin-bottom: 15px; height: 18px; }
         .progress-fill { height: 100%; transition: width 0.5s ease; }
+
         .charts-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        canvas { background: #1e1e1e; padding: 10px; border-radius: 10px; max-height: 250px; }
+        canvas { background: #1e1e1e; padding: 10px; border-radius: 10px; max-height: 280px; }
     </style>
 </head>
 <body>
 
+<div class="status-online"><span class="dot"></span> Sistema Online - Captura em Tempo Real</div>
+
 <div class="header">
     <div>
-        <h2 style="margin:0">SISTEMA S.P.A.</h2>
+        <h2 style="margin:0; font-size: 1.4rem;">SISTEMA S.P.A.</h2>
         <small>Supervisor: Sidney (S. P. A.)</small>
     </div>
     <div class="tma-badge">TMA GERAL: 03:50</div>
 </div>
 
-<h3 style="color: #bbb; font-size: 1rem;">TRIAGEM DE PERFIL (CLIQUE PARA COMPUTAR)</h3>
+<h3 style="color: #bbb; font-size: 0.9rem; margin-bottom: 15px;">TRIAGEM DE PERFIL (CLIQUE PARA COMPUTAR)</h3>
 <div class="grid-perfis">
-    <button class="btn-perfil atritado" onclick="registrarInput(0, 'ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar 30s.')">Atritado</button>
+    <button class="btn-perfil atritado" onclick="registrarInput(0, 'ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar. Use: \'Entendo sua frustração\'.')">Atritado</button>
     <button class="btn-perfil analitico" onclick="registrarInput(1, 'ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê detalhadamente.')">Analítico</button>
-    <button class="btn-perfil expresso" onclick="registrarInput(2, 'EXPRESSIVO', '🔵 CONEXÃO: Valorize a história, mas retome o controle.')">Expressivo</button>
+    <button class="btn-perfil expresso" onclick="registrarInput(2, 'EXPRESSIVO', '🔵 CONEXÃO: Retome o controle da chamada com educação.')">Expressivo</button>
     <button class="btn-perfil pragmatico" onclick="registrarInput(2, 'PRAGMÁTICO', '🟢 AGILIDADE: Vá direto ao ponto. Foco no FCR.')">Pragmático</button>
 </div>
 
@@ -59,8 +71,7 @@
 </div>
 
 <script>
-    // Dados Iniciais
-    let dadosPizza = [35, 25, 40]; // Atritado, Analítico, Outros (Expressivo/Pragmático)
+    let contagens = [35, 25, 40]; // Atritado, Analítico, Outros
     
     const ctxPizza = document.getElementById('chartPerfis').getContext('2d');
     let chartPerfis = new Chart(ctxPizza, {
@@ -68,23 +79,40 @@
         data: {
             labels: ['Atritado', 'Analítico', 'Outros'],
             datasets: [{
-                data: dadosPizza,
-                backgroundColor: ['#ff5252', '#ffd740', '#40c4ff']
+                data: contagens,
+                backgroundColor: ['#ff5252', '#ffd740', '#40c4ff'],
+                borderWidth: 0
             }]
         },
         options: { 
             plugins: { 
-                legend: { position: 'bottom', labels: { color: '#fff', font: { size: 14 } } } 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        color: '#fff', 
+                        font: { size: 12 },
+                        padding: 15,
+                        generateLabels: (chart) => {
+                            const data = chart.data;
+                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            return data.labels.map((label, i) => ({
+                                text: `${label}: ${Math.round((data.datasets[0].data[i] / total) * 100)}%`,
+                                fillStyle: data.datasets[0].backgroundColor[i],
+                                color: '#fff',
+                                hidden: false,
+                                index: i
+                            }));
+                        }
+                    } 
+                } 
             } 
         }
     });
 
     function registrarInput(index, perfil, msg) {
-        // 1. Atualiza o gráfico de pizza
-        dadosPizza[index] += 1;
+        contagens[index] += 1;
         chartPerfis.update();
         
-        // 2. Lógica de Negócio: Se clicar em Atritado, o "Pendente" sobe um pouco
         if(perfil === 'ATRITADO') {
             let p = parseInt(document.getElementById('val-pendente').innerText);
             if(p < 100) {
@@ -96,11 +124,9 @@
                 document.getElementById('bar-liberado').style.width = lib + "%";
             }
         }
-
-        alert("DIRETRIZ " + perfil + ":\n\n" + msg + "\n\n(Dado computado no Relatório de Gestão)");
+        alert("DIRETRIZ " + perfil + ":\n\n" + msg);
     }
 
-    // Gráfico de TMA permanece para demonstração de histórico
     new Chart(document.getElementById('chartTma'), {
         type: 'bar',
         data: {
@@ -111,7 +137,7 @@
                 backgroundColor: ['#ff5252', '#69f0ae', '#69f0ae', '#ffd740']
             }]
         },
-        options: { plugins: { legend: { labels: { color: '#fff' } } } }
+        options: { plugins: { legend: { labels: { color: '#fff', font: { size: 10 } } } } }
     });
 </script>
 
