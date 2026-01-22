@@ -13,19 +13,16 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
         .tma-badge { background: #333; padding: 8px 15px; border-radius: 5px; color: var(--pragmatico); font-weight: bold; border: 1px solid var(--pragmatico); }
-        
         .grid-perfis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.75rem; }
         .atritado { background: var(--atritado); }
         .analitico { background: var(--analitico); }
         .expresso { background: var(--expresso); }
         .pragmatico { background: var(--pragmatico); }
-
         .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #555; }
         .metric-title { font-size: 0.9rem; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .progress-bar { background: #333; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
+        .progress-bar { background: #333; height: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; height: 20px; }
         .progress-fill { height: 100%; transition: width 0.5s ease; }
-
         .charts-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         canvas { background: #1e1e1e; padding: 10px; border-radius: 10px; max-height: 250px; }
     </style>
@@ -40,33 +37,70 @@
     <div class="tma-badge">TMA GERAL: 03:50</div>
 </div>
 
-<h3 style="color: #bbb; font-size: 1rem;">TRIAGEM DE PERFIL (DIDÁTICA)</h3>
+<h3 style="color: #bbb; font-size: 1rem;">TRIAGEM DE PERFIL (CLIQUE PARA COMPUTAR)</h3>
 <div class="grid-perfis">
-    <button class="btn-perfil atritado" onclick="abrirEstrategia('ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar 30s. Use: \'Entendo sua frustração, vamos resolver agora\'. Não leve para o pessoal.')">Atritado</button>
-    <button class="btn-perfil analitico" onclick="abrirEstrategia('ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê de cada etapa. Use dados e protocolos claros.')">Analítico</button>
-    <button class="btn-perfil expresso" onclick="abrirEstrategia('EXPRESSIVO', '🔵 CONEXÃO: Valorize a história, mas retome o controle da chamada com educação.')">Expressivo</button>
-    <button class="btn-perfil pragmatico" onclick="abrirEstrategia('PRAGMÁTICO', '🟢 AGILIDADE: Vá direto ao ponto. Objetivo é resolução rápida (FCR).')">Pragmático</button>
+    <button class="btn-perfil atritado" onclick="registrarInput(0, 'ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar 30s.')">Atritado</button>
+    <button class="btn-perfil analitico" onclick="registrarInput(1, 'ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê detalhadamente.')">Analítico</button>
+    <button class="btn-perfil expresso" onclick="registrarInput(2, 'EXPRESSIVO', '🔵 CONEXÃO: Valorize a história, mas retome o controle.')">Expressivo</button>
+    <button class="btn-perfil pragmatico" onclick="registrarInput(2, 'PRAGMÁTICO', '🟢 AGILIDADE: Vá direto ao ponto. Foco no FCR.')">Pragmático</button>
 </div>
 
 <div class="card">
-    <div class="metric-title"><span>LIBERADO (FCR/SLA OK)</span> <strong>85%</strong></div>
-    <div class="progress-bar"><div class="progress-fill" style="width: 85%; background: var(--pragmatico);"></div></div>
+    <div class="metric-title"><span>LIBERADO (FCR/SLA OK)</span> <strong id="val-liberado">85%</strong></div>
+    <div class="progress-bar"><div id="bar-liberado" class="progress-fill" style="width: 85%; background: var(--pragmatico);"></div></div>
     
-    <div class="metric-title"><span>PENDENTE (OFENSOR TMA/NPS)</span> <strong>15%</strong></div>
-    <div class="progress-bar"><div class="progress-fill" style="width: 15%; background: var(--atritado);"></div></div>
+    <div class="metric-title"><span>PENDENTE (OFENSOR TMA/NPS)</span> <strong id="val-pendente">15%</strong></div>
+    <div class="progress-bar"><div id="bar-pendente" class="progress-fill" style="width: 15%; background: var(--atritado);"></div></div>
 </div>
 
 <div class="charts-container">
-    <canvas id="chartTma"></canvas>
     <canvas id="chartPerfis"></canvas>
+    <canvas id="chartTma"></canvas>
 </div>
 
 <script>
-    function abrirEstrategia(titulo, texto) {
-        alert("DIRETRIZ " + titulo + ":\n\n" + texto);
+    // Dados Iniciais
+    let dadosPizza = [35, 25, 40]; // Atritado, Analítico, Outros (Expressivo/Pragmático)
+    
+    const ctxPizza = document.getElementById('chartPerfis').getContext('2d');
+    let chartPerfis = new Chart(ctxPizza, {
+        type: 'pie',
+        data: {
+            labels: ['Atritado', 'Analítico', 'Outros'],
+            datasets: [{
+                data: dadosPizza,
+                backgroundColor: ['#ff5252', '#ffd740', '#40c4ff']
+            }]
+        },
+        options: { 
+            plugins: { 
+                legend: { position: 'bottom', labels: { color: '#fff', font: { size: 14 } } } 
+            } 
+        }
+    });
+
+    function registrarInput(index, perfil, msg) {
+        // 1. Atualiza o gráfico de pizza
+        dadosPizza[index] += 1;
+        chartPerfis.update();
+        
+        // 2. Lógica de Negócio: Se clicar em Atritado, o "Pendente" sobe um pouco
+        if(perfil === 'ATRITADO') {
+            let p = parseInt(document.getElementById('val-pendente').innerText);
+            if(p < 100) {
+                p += 2;
+                let lib = 100 - p;
+                document.getElementById('val-pendente').innerText = p + "%";
+                document.getElementById('bar-pendente').style.width = p + "%";
+                document.getElementById('val-liberado').innerText = lib + "%";
+                document.getElementById('bar-liberado').style.width = lib + "%";
+            }
+        }
+
+        alert("DIRETRIZ " + perfil + ":\n\n" + msg + "\n\n(Dado computado no Relatório de Gestão)");
     }
 
-    // Gráfico TMA por Operador
+    // Gráfico de TMA permanece para demonstração de histórico
     new Chart(document.getElementById('chartTma'), {
         type: 'bar',
         data: {
@@ -78,26 +112,6 @@
             }]
         },
         options: { plugins: { legend: { labels: { color: '#fff' } } } }
-    });
-
-    // Gráfico de Pizza com PERCENTUAL nas legendas
-    new Chart(document.getElementById('chartPerfis'), {
-        type: 'pie',
-        data: {
-            labels: ['Atritado (35%)', 'Analítico (25%)', 'Outros (40%)'],
-            datasets: [{
-                data: [35, 25, 40],
-                backgroundColor: ['#ff5252', '#ffd740', '#40c4ff']
-            }]
-        },
-        options: { 
-            plugins: { 
-                legend: { 
-                    position: 'bottom', 
-                    labels: { color: '#fff', padding: 20 } 
-                } 
-            } 
-        }
     });
 </script>
 
