@@ -3,143 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA S.P.A. | GESTÃO ELITE</title>
+    <title>SISTEMA S.P.A. | MATRIX GESTÃO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0;
-            --atritado: #ff5252; --analitico: #ffd740; --expresso: #40c4ff; --pragmatico: #69f0ae;
+            --matrix-green: #00ff41;
+            --bg-dark: #000;
+            --card-bg: rgba(20, 20, 20, 0.9);
+            --atritado: #e27c7c;
+            --analitico: #e2b97c;
+            --outros: #7caee2;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        body, html { margin: 0; padding: 0; background: black; font-family: 'Courier New', Courier, monospace; overflow-x: hidden; }
         
-        /* Status Online Pulsante */
-        .status-online { display: flex; align-items: center; font-size: 0.7rem; color: var(--pragmatico); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .dot { height: 8px; width: 8px; background-color: var(--pragmatico); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--pragmatico); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        /* Canvas Matrix de Fundo */
+        #matrixCanvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-        .tma-badge { background: #1a3321; padding: 8px 15px; border-radius: 5px; color: var(--pragmatico); font-weight: bold; border: 1px solid var(--pragmatico); font-size: 0.8rem; }
-        
+        .container { padding: 20px; position: relative; z-index: 1; }
+
+        .status-online { color: var(--matrix-green); font-size: 0.7rem; margin-bottom: 10px; font-weight: bold; text-shadow: 0 0 5px var(--matrix-green); }
+        .dot { height: 8px; width: 8px; background-color: var(--matrix-green); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--matrix-green); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        .header { border-bottom: 1px solid var(--matrix-green); padding-bottom: 10px; margin-bottom: 20px; color: white; }
+        .header h2 { margin: 0; font-size: 1.3rem; letter-spacing: 2px; }
+
         .grid-perfis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
-        .btn-perfil:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-perfil { padding: 15px 5px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; color: #000; }
         .atritado { background: var(--atritado); }
         .analitico { background: var(--analitico); }
-        .expresso { background: var(--expresso); }
-        .pragmatico { background: var(--pragmatico); }
+        .expresso { background: var(--outros); }
+        .pragmatico { background: #7ce2a6; }
 
-        .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #555; }
-        .metric-title { font-size: 0.9rem; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .progress-bar { background: #333; border-radius: 10px; overflow: hidden; margin-bottom: 15px; height: 18px; }
-        .progress-fill { height: 100%; transition: width 0.5s ease; }
+        .card-metrics { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--matrix-green); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); margin-bottom: 20px; }
+        .label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--matrix-green); margin-bottom: 5px; }
+        .bar-bg { background: #111; height: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #333; }
+        .bar-fill { height: 100%; transition: width 0.5s ease; }
 
-        .charts-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        canvas { background: #1e1e1e; padding: 10px; border-radius: 10px; max-height: 280px; }
+        /* Gráfico com fundo claro para leitura */
+        .chart-box { background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 8px; margin-top: 10px; }
+        h4 { color: #000; margin: 0 0 10px 0; text-align: center; font-size: 0.8rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="status-online"><span class="dot"></span> Sistema Online - Captura em Tempo Real</div>
+    <canvas id="matrixCanvas"></canvas>
 
-<div class="header">
-    <div>
-        <h2 style="margin:0; font-size: 1.4rem;">SISTEMA S.P.A.</h2>
-        <small>Supervisor: Sidney (S. P. A.)</small>
+    <div class="container">
+        <div class="status-online"><span class="dot"></span> SYSTEM_LIVE: CONNECTED</div>
+
+        <div class="header">
+            <h2>SISTEMA S.P.A.</h2>
+            <small style="color: var(--matrix-green);">LOG: Sidney_SPA_Supervisor</small>
+        </div>
+
+        <div class="grid-perfis">
+            <button class="btn-perfil atritado" onclick="updateData(0)">Atritado</button>
+            <button class="btn-perfil analitico" onclick="updateData(1)">Analítico</button>
+            <button class="btn-perfil expresso" onclick="updateData(2)">Expressivo</button>
+            <button class="btn-perfil pragmatico" onclick="updateData(2)">Pragmático</button>
+        </div>
+
+        <div class="card-metrics">
+            <div style="margin-bottom: 15px;">
+                <div class="label"><span>LIBERADO (SLA/FCR)</span> <span id="txt-lib">85%</span></div>
+                <div class="bar-bg"><div id="bar-lib" class="bar-fill" style="width: 85%; background: var(--matrix-green);"></div></div>
+            </div>
+            <div>
+                <div class="label"><span>PENDENTE (RISCO)</span> <span id="txt-pen">15%</span></div>
+                <div class="bar-bg"><div id="bar-pen" class="bar-fill" style="width: 15%; background: var(--atritado);"></div></div>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h4>DISTRIBUIÇÃO DE PERFIL (%)</h4>
+            <canvas id="matrixChart"></canvas>
+        </div>
     </div>
-    <div class="tma-badge">TMA GERAL: 03:50</div>
-</div>
-
-<h3 style="color: #bbb; font-size: 0.9rem; margin-bottom: 15px;">TRIAGEM DE PERFIL (CLIQUE PARA COMPUTAR)</h3>
-<div class="grid-perfis">
-    <button class="btn-perfil atritado" onclick="registrarInput(0, 'ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar. Use: \'Entendo sua frustração\'.')">Atritado</button>
-    <button class="btn-perfil analitico" onclick="registrarInput(1, 'ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê detalhadamente.')">Analítico</button>
-    <button class="btn-perfil expresso" onclick="registrarInput(2, 'EXPRESSIVO', '🔵 CONEXÃO: Retome o controle da chamada com educação.')">Expressivo</button>
-    <button class="btn-perfil pragmatico" onclick="registrarInput(2, 'PRAGMÁTICO', '🟢 AGILIDADE: Vá direto ao ponto. Foco no FCR.')">Pragmático</button>
-</div>
-
-<div class="card">
-    <div class="metric-title"><span>LIBERADO (FCR/SLA OK)</span> <strong id="val-liberado">85%</strong></div>
-    <div class="progress-bar"><div id="bar-liberado" class="progress-fill" style="width: 85%; background: var(--pragmatico);"></div></div>
-    
-    <div class="metric-title"><span>PENDENTE (OFENSOR TMA/NPS)</span> <strong id="val-pendente">15%</strong></div>
-    <div class="progress-bar"><div id="bar-pendente" class="progress-fill" style="width: 15%; background: var(--atritado);"></div></div>
-</div>
-
-<div class="charts-container">
-    <canvas id="chartPerfis"></canvas>
-    <canvas id="chartTma"></canvas>
-</div>
 
 <script>
-    let contagens = [35, 25, 40]; // Atritado, Analítico, Outros
-    
-    const ctxPizza = document.getElementById('chartPerfis').getContext('2d');
-    let chartPerfis = new Chart(ctxPizza, {
-        type: 'pie',
+    // Matrix Background Effect
+    const canvas = document.getElementById('matrixCanvas');
+    const ctxM = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const chars = "0123456789ABCDEFHIJKLMNOPQRSTUVXYZ";
+    const fontSize = 10;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function drawMatrix() {
+        ctxM.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctxM.fillRect(0, 0, canvas.width, canvas.height);
+        ctxM.fillStyle = "#0F0";
+        ctxM.font = fontSize + "px arial";
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars.charAt(Math.floor(Math.random() * chars.length));
+            ctxM.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(drawMatrix, 35);
+
+    // Chart Logic
+    let dataVals = [35, 25, 40];
+    const ctxC = document.getElementById('matrixChart').getContext('2d');
+    let myChart = new Chart(ctxC, {
+        type: 'doughnut',
         data: {
             labels: ['Atritado', 'Analítico', 'Outros'],
             datasets: [{
-                data: contagens,
-                backgroundColor: ['#ff5252', '#ffd740', '#40c4ff'],
+                data: dataVals,
+                backgroundColor: ['#e27c7c', '#e2b97c', '#7caee2'],
                 borderWidth: 0
             }]
         },
-        options: { 
-            plugins: { 
-                legend: { 
-                    position: 'bottom', 
-                    labels: { 
-                        color: '#fff', 
-                        font: { size: 12 },
-                        padding: 15,
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#000',
+                        font: { size: 12, weight: 'bold' },
                         generateLabels: (chart) => {
                             const data = chart.data;
                             const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                             return data.labels.map((label, i) => ({
                                 text: `${label}: ${Math.round((data.datasets[0].data[i] / total) * 100)}%`,
                                 fillStyle: data.datasets[0].backgroundColor[i],
-                                color: '#fff',
-                                hidden: false,
+                                color: '#000',
                                 index: i
                             }));
                         }
-                    } 
-                } 
-            } 
-        }
-    });
-
-    function registrarInput(index, perfil, msg) {
-        contagens[index] += 1;
-        chartPerfis.update();
-        
-        if(perfil === 'ATRITADO') {
-            let p = parseInt(document.getElementById('val-pendente').innerText);
-            if(p < 100) {
-                p += 2;
-                let lib = 100 - p;
-                document.getElementById('val-pendente').innerText = p + "%";
-                document.getElementById('bar-pendente').style.width = p + "%";
-                document.getElementById('val-liberado').innerText = lib + "%";
-                document.getElementById('bar-liberado').style.width = lib + "%";
+                    }
+                }
             }
         }
-        alert("DIRETRIZ " + perfil + ":\n\n" + msg);
-    }
-
-    new Chart(document.getElementById('chartTma'), {
-        type: 'bar',
-        data: {
-            labels: ['João', 'Maria', 'Pedro', 'Ana'],
-            datasets: [{
-                label: 'TMA Individual (Meta: 03:45)',
-                data: [4.30, 3.15, 2.50, 3.55],
-                backgroundColor: ['#ff5252', '#69f0ae', '#69f0ae', '#ffd740']
-            }]
-        },
-        options: { plugins: { legend: { labels: { color: '#fff', font: { size: 10 } } } } }
     });
-</script>
 
+    function updateData(i) {
+        dataVals[i] += 1;
+        myChart.update();
+        if(i === 0) {
+            let p = parseInt(document.getElementById('txt-pen').innerText);
+            if(p < 100) {
+                p += 1;
+                document.getElementById('txt-pen').innerText = p + "%";
+                document.getElementById('bar-pen').style.width = p + "%";
+                document.getElementById('txt-lib').innerText = (100-p) + "%";
+                document.getElementById('bar-lib').style.width = (100-p) + "%";
+            }
+        }
+    }
+</script>
 </body>
 </html>
