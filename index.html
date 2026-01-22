@@ -14,21 +14,18 @@
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
         .tma-badge { background: #333; padding: 8px 15px; border-radius: 5px; color: var(--pragmatico); font-weight: bold; border: 1px solid var(--pragmatico); }
         
-        /* Botões de Perfil */
         .grid-perfis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-perfil { padding: 20px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; font-size: 0.75rem; }
         .atritado { background: var(--atritado); }
         .analitico { background: var(--analitico); }
         .expresso { background: var(--expresso); }
         .pragmatico { background: var(--pragmatico); }
 
-        /* Relatório de Gestão */
         .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #555; }
         .metric-title { font-size: 0.9rem; margin-bottom: 10px; display: flex; justify-content: space-between; }
         .progress-bar { background: #333; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
         .progress-fill { height: 100%; transition: width 0.5s ease; }
 
-        /* Gráficos */
         .charts-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         canvas { background: #1e1e1e; padding: 10px; border-radius: 10px; max-height: 250px; }
     </style>
@@ -43,12 +40,12 @@
     <div class="tma-badge">TMA GERAL: 03:50</div>
 </div>
 
-<h3 style="color: #bbb;">TRIAGEM DE PERFIL (DIDÁTICA)</h3>
+<h3 style="color: #bbb; font-size: 1rem;">TRIAGEM DE PERFIL (DIDÁTICA)</h3>
 <div class="grid-perfis">
     <button class="btn-perfil atritado" onclick="abrirEstrategia('ATRITADO', '🔴 ESCUTA ATIVA: Deixe desabafar 30s. Use: \'Entendo sua frustração, vamos resolver agora\'. Não leve para o pessoal.')">Atritado</button>
-    <button class="btn-perfil analitico" onclick="abrirEstrategia('ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê de cada etapa. Use dados e protocolos claros. Sem pressa na explicação.')">Analítico</button>
-    <button class="btn-perfil expresso" onclick="abrirEstrategia('EXPRESSIVO', '🔵 EMPATIA E CONEXÃO: Valorize a história do cliente, mas retome o controle da chamada com educação.')">Expressivo</button>
-    <button class="btn-perfil pragmatico" onclick="abrirEstrategia('PRAGMÁTICO', '🟢 FOCO E AGILIDADE: Vá direto ao ponto. Sem social excessiva. Objetivo é resolução rápida (FCR).')">Pragmático</button>
+    <button class="btn-perfil analitico" onclick="abrirEstrategia('ANALÍTICO', '🟡 SEGURANÇA TÉCNICA: Explique o porquê de cada etapa. Use dados e protocolos claros.')">Analítico</button>
+    <button class="btn-perfil expresso" onclick="abrirEstrategia('EXPRESSIVO', '🔵 CONEXÃO: Valorize a história, mas retome o controle da chamada com educação.')">Expressivo</button>
+    <button class="btn-perfil pragmatico" onclick="abrirEstrategia('PRAGMÁTICO', '🟢 AGILIDADE: Vá direto ao ponto. Objetivo é resolução rápida (FCR).')">Pragmático</button>
 </div>
 
 <div class="card">
@@ -59,7 +56,6 @@
     <div class="progress-bar"><div class="progress-fill" style="width: 15%; background: var(--atritado);"></div></div>
 </div>
 
-<h3 style="color: #bbb;">VISÃO ESTRATÉGICA (OPERADORES FICTÍCIOS)</h3>
 <div class="charts-container">
     <canvas id="chartTma"></canvas>
     <canvas id="chartPerfis"></canvas>
@@ -70,13 +66,13 @@
         alert("DIRETRIZ " + titulo + ":\n\n" + texto);
     }
 
-    // Gráfico TMA por Operador (Fictício)
+    // Gráfico TMA por Operador
     new Chart(document.getElementById('chartTma'), {
         type: 'bar',
         data: {
             labels: ['João', 'Maria', 'Pedro', 'Ana'],
             datasets: [{
-                label: 'TMA por Operador (Meta: 03:45)',
+                label: 'TMA Individual (Meta: 03:45)',
                 data: [4.30, 3.15, 2.50, 3.55],
                 backgroundColor: ['#ff5252', '#69f0ae', '#69f0ae', '#ffd740']
             }]
@@ -84,17 +80,24 @@
         options: { plugins: { legend: { labels: { color: '#fff' } } } }
     });
 
-    // Gráfico Distribuição de Perfis
+    // Gráfico de Pizza com PERCENTUAL nas legendas
     new Chart(document.getElementById('chartPerfis'), {
         type: 'pie',
         data: {
-            labels: ['Atritado', 'Analítico', 'Outros'],
+            labels: ['Atritado (35%)', 'Analítico (25%)', 'Outros (40%)'],
             datasets: [{
                 data: [35, 25, 40],
                 backgroundColor: ['#ff5252', '#ffd740', '#40c4ff']
             }]
         },
-        options: { plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
+        options: { 
+            plugins: { 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { color: '#fff', padding: 20 } 
+                } 
+            } 
+        }
     });
 </script>
 
