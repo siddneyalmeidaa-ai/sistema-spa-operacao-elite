@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA S.P.A. - GESTÃO 360</title>
+    <style>
+        :root {
+            --primaria: #2c3e50;
+            --sucesso: #27ae60;
+            --alerta: #f1c40f;
+            --critico: #e74c3c;
+            --info: #3498db;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* Dashboard Supervisor */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .status-box { padding: 10px 20px; border-radius: 8px; font-weight: bold; color: white; }
+        
+        /* Painel do Operador */
+        .painel-operador { margin-top: 30px; padding: 20px; border: 1px dashed #ccc; border-radius: 8px; }
+        .btn-perfil { padding: 15px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; width: 22%; margin: 1%; transition: 0.3s; }
+        .btn-atritado { background: var(--critico); }
+        .btn-analitico { background: var(--alerta); }
+        .btn-expressivo { background: var(--info); }
+        .btn-pragmatico { background: var(--sucesso); }
+
+        /* Pop-up Interativo */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+        .modal-content { background: white; margin: 15% auto; padding: 30px; border-radius: 15px; width: 80%; max-width: 500px; text-align: center; }
+        
+        /* Tabela de Relatório */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: var(--primaria); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1>SISTEMA S.P.A. | Supervisor: Sidney</h1>
+        <div id="status-geral" class="status-box" style="background: var(--sucesso);">TMA GERAL: 03:45</div>
+    </div>
+
+    <div class="painel-operador">
+        <h3>TRIAGEM DE PERFIL (AÇÃO IMEDIATA)</h3>
+        <button class="btn-perfil btn-atritado" onclick="gerarDiretriz('ATRITADO')">🔴 ATRITADO</button>
+        <button class="btn-perfil btn-analitico" onclick="gerarDiretriz('ANALÍTICO')">🟡 ANALÍTICO</button>
+        <button class="btn-perfil btn-expressivo" onclick="gerarDiretriz('EXPRESSIVO')">🔵 EXPRESSIVO</button>
+        <button class="btn-perfil btn-pragmatico" onclick="gerarDiretriz('PRAGMÁTICO')">🟢 PRAGMÁTICO</button>
+    </div>
+
+    <div class="relatorio">
+        <h3>RELATÓRIO DE GESTÃO - MÉTRICAS ATUAIS</h3>
+        <table>
+            <tr>
+                <th>Métrica</th>
+                <th>Status</th>
+                <th>Progresso</th>
+            </tr>
+            <tr>
+                <td>LIBERADO (Meta Atingida)</td>
+                <td>85%</td>
+                <td><progress value="85" max="100"></progress></td>
+            </tr>
+            <tr>
+                <td>PENDENTE (Ajuste Necessário)</td>
+                <td>15%</td>
+                <td><progress value="15" max="100"></progress></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="modalDiretriz" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitulo"></h2>
+        <p id="modalCorpo" style="font-size: 18px; line-height: 1.6;"></p>
+        <div id="alertaTMA" style="background: #ffeded; color: #cc0000; padding: 10px; border-radius: 5px; display: none;">
+            ⚠️ ALERTA: Supervisor Sidney acionado (TMA > 5 min).
+        </div>
+        <br>
+        <button onclick="fecharModal()" style="padding: 10px 20px; cursor: pointer;">ENTENDIDO, VOU EXECUTAR!</button>
+    </div>
+</div>
+
+<script>
+    function gerarDiretriz(perfil) {
+        const modal = document.getElementById('modalDiretriz');
+        const titulo = document.getElementById('modalTitulo');
+        const corpo = document.getElementById('modalCorpo');
+        const alerta = document.getElementById('alertaTMA');
+
+        modal.style.display = "block";
+        
+        if(perfil === 'ATRITADO') {
+            titulo.innerText = "ESTRATÉGIA: BLINDAGEM";
+            corpo.innerText = "Frase Flash: 'Sr(a), meu foco é resolver agora. Vamos por este caminho...'. Não interrompa. Use tom de voz baixo.";
+            alerta.style.display = "block"; // Simula o acionamento automático do seu dashboard
+        } else if(perfil === 'PRAGMÁTICO') {
+            titulo.innerText = "ESTRATÉGIA: VELOCIDADE";
+            corpo.innerText = "Seja direto. Sem rodeios. Entregue o protocolo em até 2 minutos. Foco em TMA Recorde.";
+            alerta.style.display = "none";
+        }
+        // Outros perfis seguem a mesma lógica...
+    }
+
+    function fecharModal() {
+        document.getElementById('modalDiretriz').style.display = "none";
+    }
+</script>
+
+</body>
+</html>
